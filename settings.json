@@ -1,0 +1,1 @@
+[{"proxies_file": "proxies.txt", "mails_file": "mails.txt", "targets_file": "targets.txt", "smtp_objects": {"smtp.gmail.com": [465, 587]}, "mails_per_account": 5, "proxy": false}]
