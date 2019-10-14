@@ -7,6 +7,13 @@ spammer.init()
 
 class update:
     @staticmethod
+    def __element_in_file(file, element):
+        if file in os.listdir('.'):
+            with open(file, 'r') as file:
+                file = file.read().split('\n')
+            return True if element in file else False
+
+    @staticmethod
     def proxies_file(file):
         if file in os.listdir('.'):
             spammer.data.proxies_file = file
@@ -30,47 +37,76 @@ class update:
     @staticmethod
     def proxies(from_file):
         if from_file in os.listdir('.'):
-            with open(spammer.data.proxies_file, 'a') as current_proxies:
+            with open(spammer.data.proxies_file, 'a+') as current_proxies_file:
                 with open(from_file, 'r') as new_proxies:
-                    current_proxies.write(new_proxies.read() + '\n')
+                    current_proxies = current_proxies_file.read().split('\n')
+                    new_proxies = new_proxies.read().split('\n')
+                    new_proxies_to_add = []
+                    for proxy in current_proxies:
+                        if proxy not in new_proxies and proxy.strip() != '':
+                            new_proxies_to_add.append(proxy)
+
+                    current_proxies_file.write('\n'.join(new_proxies_to_add) + '\n')
             print('[INFO] Proxies updated successfully')
-        print('[ERROR] File with proxies not found!')
+        else:
+            print('[ERROR] File with proxies not found!')
 
     @staticmethod
     def proxy(new_proxy):
         with open(spammer.data.proxies_file, 'a') as current_proxies:
-            current_proxies.write(new_proxy + '\n')
+            if not update.__element_in_file(new_proxy, spammer.data.proxies_file):
+                current_proxies.write(new_proxy + '\n')
+            else:
+                print('[ERROR] Proxy exists!')
         print('[INFO] Proxy added successfully')
 
     @staticmethod
     def mail(new_mail):
         with open(spammer.data.mails_file, 'a') as mails_file:
-            mails_file.write(new_mail + '\n')
+            if not update.__element_in_file(new_mail, spammer.data.proxies_file):
+                mails_file.write(new_mail + '\n')
         print('[INFO] Mail added successfully')
 
     @staticmethod
     def mails(from_file):
         if from_file in os.listdir('.'):
-            with open(spammer.data.mails_file, 'a') as current_mails:
+            with open(spammer.data.proxies_file, 'a+') as current_mails_file:
                 with open(from_file, 'r') as new_mails:
-                    current_mails.write(new_mails.read() + '\n')
+                    current_mails = current_mails_file.read().split('\n')
+                    new_mails = new_mails.read().split('\n')
+                    new_mails_to_add = []
+                    for mail in current_mails:
+                        if mail not in new_mails and mail.strip() != '':
+                            new_mails_to_add.append(mail)
+
+                    current_mails_file.write('\n'.join(new_mails_to_add) + '\n')
             print('[INFO] Mails updated successfully')
-        print('[ERROR] File with mails not found!')
+        else:
+            print('[ERROR] File with mails not found!')
 
     @staticmethod
     def target(new_target):
         with open(spammer.data.targets_file, 'a') as targets_file:
-            targets_file.write(new_target + '\n')
+            if not update.__element_in_file(new_target, spammer.data.proxies_file):
+                targets_file.write(new_target + '\n')
         print('[INFO] Target added successfully')
 
     @staticmethod
     def targets(from_file):
         if from_file in os.listdir('.'):
-            with open(spammer.data.targets_file, 'a') as targets_file:
+            with open(spammer.data.proxies_file, 'a+') as current_targets_file:
                 with open(from_file, 'r') as new_targets:
-                    targets_file.write(new_targets.read() + '\n')
+                    current_targets = current_targets_file.read().split('\n')
+                    new_targets = new_targets.read().split('\n')
+                    new_targets_to_add = []
+                    for target in current_targets:
+                        if target not in new_targets and target.strip() != '':
+                            new_targets_to_add.append(target)
+
+                    current_targets_file.write('\n'.join(new_targets_to_add) + '\n')
             print('[INFO] Targets updated successfully')
-        print('[ERROR] File with targets not found!')
+        else:
+            print('[ERROR] File with targets not found!')
 
 
 def parse(text, config=None):
