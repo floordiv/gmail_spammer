@@ -15,8 +15,9 @@ commands:
         targets-file [file; new file] - change default file with targets
 
      start:
+        spam [file; file with a message, which should be sent] - run a spam
         proxies-test - run a proxies test (from default file with proxies); check for broken proxies
 
      pause - pause spamming
      continue - continue spamming
-
+     help - get help
