@@ -147,6 +147,8 @@ def runcmd(cmd):
             another_commands[cmd_text[1]]()
         else:
             another_commands[cmd_text[0]]()
+    except IndexError:
+        print('[ERROR] Maybe, you forgot some arguments? Enter command "help"')
     except KeyError as exception:
         print('[ERROR] Unknown command: {}'.format(str(exception)))
 
