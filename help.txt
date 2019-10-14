@@ -1,23 +1,22 @@
-используется ЯП Python, модуль smtplib
+Spammer, made by floordiv, v. 1.0.0
 
-в папке, в которой будет лежать сам скрипт spammer.py и shell.py, также должны быть три файла:
+commands:
+    update:
+        proxy [proxy; ip:port] - add proxy to the list
+        mail [mail; mail/password] - add mail to the list
+        target [mail; mail] - add target to the list
 
-    > proxies.txt - в нём построчно будут записаны https (важно) прокси
+        proxies [file; from file] - add proxies from given file
+        mails [file; from file] - add mails from given file
+        targets [file; from file] - add targets from given file
 
-    > mails.txt - в нём будут лежать почтовые ящики, с которых должен будет производиться спам (в формате адрес/пароль)
+        proxies-file [file; new file] - change default file with proxies
+        mails-file [file; new file] - change default file with mails
+        targets-file [file; new file] - change default file with targets
 
-    > targets.txt - файл, в котором будут лежать сами цели спама - т.е. электронные адреса
+     start:
+        proxies-test - run a proxies test (from default file with proxies); check for broken proxies
 
-    > (необязательно) help.txt - документация к программе
+     pause - pause spamming
+     continue - continue spamming
 
-spammer.py - небольшая программа, которая будет производить спам
-
-shell.py - командная строка для управления программой
-
-при первом запуске, в файле proxies.txt уже будут лежать прокси
-
-для запуска, в зависимости от операционной системы и настроек, введите:
-
-   windows/cmd (или любой другой терминал)/python3 : python shell.py  (находясь при этом в папке с самой программой; при возникновении ошибок, попробуйте вместо python ввести python3)
-
-   linux/python3 : python3 shell.py (всё также находясь в одной папке с программой)

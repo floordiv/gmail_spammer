@@ -137,14 +137,18 @@ def runcmd(cmd):
     another_commands = {
         'proxies-test': spammer.test_proxies,
         'pause': spammer.pause_spam,
-        'continue': spammer.continue_spam
+        'continue': spammer.continue_spam,
+        'help': spammer.gethelp
     }
-    if cmd_text[0] == 'update':
-        update_commands[cmd_text[1]](cmd_text[2])
-    elif cmd_text[0] == 'start':
-        another_commands[cmd_text[1]]()
-    else:
-        another_commands[cmd_text[0]]()
+    try:
+        if cmd_text[0] == 'update':
+            update_commands[cmd_text[1]](cmd_text[2])
+        elif cmd_text[0] == 'start':
+            another_commands[cmd_text[1]]()
+        else:
+            another_commands[cmd_text[0]]()
+    except KeyError as exception:
+        print('[ERROR] Unknown command: {}'.format(str(exception)))
 
 
 if __name__ == '__main__':

@@ -106,6 +106,14 @@ def continue_spam():
     data.pause = False
 
 
+def gethelp():
+    try:
+        with open('help.txt', 'r') as help_text:
+            print(help_text.read())
+    except FileNotFoundError:
+        print('[ERROR] Help is unavailable: manual file doesn\'t exists')
+
+
 def test_proxies(file, test_url='google.com'):     # test url - without http or https (write it in proxies_type)
     logger.write('log', 'Testing https proxies...')
     bad_proxies = 0
