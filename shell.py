@@ -181,7 +181,7 @@ def runcmd(cmd):
         if cmd_text[0] == 'update':
             update_commands[cmd_text[1]](cmd_text[2])
         elif cmd_text[0] == 'start':
-            another_commands[cmd_text[1]]()
+            another_commands[cmd_text[1]](cmd_text[2])
         else:
             another_commands[cmd_text[0]]()
     except IndexError:
