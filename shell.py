@@ -196,6 +196,9 @@ if __name__ == '__main__':
     try:
         while True:
             cmd = input('CMD> ')
+            if cmd.strip().lower() in ['quit', 'exit']:
+                print('[INFO] Stopping spammer...')
+                break
             runcmd(cmd)
     except KeyboardInterrupt:
-        print('[INFO] Stopping spammer...')
+        print('\n[INFO] Stopping spammer...')
