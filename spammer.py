@@ -5,7 +5,6 @@ import logger
 import urllib
 import urllib.request
 import urllib.error
-import threading
 
 
 class data:
@@ -107,7 +106,7 @@ def spam(text_from_file):
                 except Exception as exception_connecting:
                     print('[ERROR] {}: port {}: connection failed: {}'.format(smtp_method, port, str(exception_connecting)))
                     return
-                    
+
         except Exception as exception:
             print('[ERROR] An error occurred while spamming: {}'.format(str(exception)))
 
