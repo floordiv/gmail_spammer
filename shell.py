@@ -37,16 +37,16 @@ class update:
     @staticmethod
     def proxies(from_file):
         if from_file in os.listdir('.'):
-            with open(spammer.data.proxies_file, 'a+') as current_proxies_file:
+            with open(spammer.data.proxies_file, 'r+') as current_proxies_file:
                 with open(from_file, 'r') as new_proxies:
                     current_proxies = current_proxies_file.read().split('\n')
                     new_proxies = new_proxies.read().split('\n')
                     new_proxies_to_add = []
                     for proxy in current_proxies:
-                        if proxy not in new_proxies and proxy.strip() != '':
+                        if proxy not in new_proxies:
                             new_proxies_to_add.append(proxy)
 
-                    current_proxies_file.write('\n'.join(new_proxies_to_add) + '\n')
+                    current_proxies_file.write('\n'.join(new_proxies_to_add))
                     spammer.data.proxies.append(new_proxies_to_add)
             print('[INFO] Proxies updated successfully')
         else:
@@ -71,16 +71,16 @@ class update:
     @staticmethod
     def mails(from_file):
         if from_file in os.listdir('.'):
-            with open(spammer.data.mails_file, 'a+') as current_mails_file:
+            with open(spammer.data.mails_file, 'r+') as current_mails_file:
                 with open(from_file, 'r') as new_mails:
                     current_mails = current_mails_file.read().split('\n')
                     new_mails = new_mails.read().split('\n')
                     new_mails_to_add = []
                     for mail in current_mails:
-                        if mail not in new_mails and mail.strip() != '':
+                        if mail not in new_mails:
                             new_mails_to_add.append(mail)
 
-                    current_mails_file.write('\n'.join(new_mails_to_add) + '\n')
+                    current_mails_file.write('\n'.join(new_mails_to_add))
                     spammer.data.mails.append(new_mails_to_add)
             print('[INFO] Mails updated successfully ({} totally)'.format(len(new_mails_to_add)))
         else:
@@ -97,7 +97,7 @@ class update:
     @staticmethod
     def targets(from_file):
         if from_file in os.listdir('.'):
-            with open(spammer.data.proxies_file, 'a+') as current_targets_file:
+            with open(spammer.data.proxies_file, 'r+') as current_targets_file:
                 with open(from_file, 'r') as new_targets:
                     current_targets = current_targets_file.read().split('\n')
                     new_targets = new_targets.read().split('\n')
@@ -197,9 +197,9 @@ def runcmd(cmd):
 
 
 if __name__ == '__main__':
-    update.proxies(spammer.data.proxies_file)
-    update.mails(spammer.data.mails_file)
-    update.targets(spammer.data.targets_file)
+    # update.proxies(spammer.data.proxies_file)
+    # update.mails(spammer.data.mails_file)
+    # update.targets(spammer.data.targets_file)
     try:
         while True:
             cmd = input('CMD> ')

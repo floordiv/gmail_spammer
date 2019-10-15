@@ -205,11 +205,28 @@ def init():
     print('[INFO] Loading proxies from file:', data.proxies_file)
     with open(data.proxies_file, 'r') as proxies:
         data.proxies = proxies.read().split('\n')
-    proxies_totally = 0
+    with open(data.mails_file, 'r') as mails:
+        data.mails = mails.read().split('\n')
+    with open(data.targets_file, 'r') as targets:
+        data.targets = targets.read().split('\n')
+    proxies_totally = 1
+    mails_totally = 1
+    targets_totally = 1
     for each in enumerate(data.proxies):
         index, value = each
         if value.strip() == '':
             del data.proxies[index]
         proxies_totally = index + 1
-    print('[INFO] Proxies loaded successfully ({} totally)'.format(proxies_totally - 1))
+    for each in enumerate(data.mails):
+        index2, value = each
+        if value.strip() == '':
+            del data.mails[index2]
+        mails_totally = index2 + 1
+    for each in enumerate(data.targets):
+        index3, value = each
+        if value.strip() == '':
+            del data.targets[index3]
+        targets_totally = index3 + 1
+    for element in [['Proxies', proxies_totally], ['Mails', mails_totally], ['Targets', targets_totally]]:
+        print('[INFO] {} loaded successfully ({} totally)'.format(element[0], element[1]))
     return True
