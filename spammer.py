@@ -37,7 +37,11 @@ class data:
 
 def spam(text_from_file):
     print('[INFO] Starting spam (text: from file: {})'.format(text_from_file))
-    text = text_from_file.read()
+    if text_from_file in os.listdir('.'):
+        with open(text_from_file, 'r') as text:
+            text = text.read()
+    else:
+        print('[ERROR] File with text not found: {}'.format(text_from_file))
     for smtp_method in data.smtp_objects:
         print('[INFO] Connecting to the {}...'.format(smtp_method))
         try:
