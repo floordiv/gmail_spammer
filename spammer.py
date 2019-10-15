@@ -59,6 +59,7 @@ def spam(text_from_file):
                         print('[INFO] Successfully connected: {}, port {}. Starting tls connection...'.format(smtp_method, port))
                         smtp.starttls()
                         print('[INFO] TLS connection started successfully')
+                        print(data.mails_index, len(data.mails))
                         while data.mails_index < len(data.mails):
                             while not data.pause:
                                 current_proxy_index = data.proxy_index
@@ -211,5 +212,5 @@ def init():
         if value.strip() == '':
             del data.proxies[index]
         proxies_totally = index + 1
-    print('[INFO] Proxies loaded successfully ({} totally)'.format(proxies_totally))
+    print('[INFO] Proxies loaded successfully ({} totally)'.format(proxies_totally - 1))
     return True
