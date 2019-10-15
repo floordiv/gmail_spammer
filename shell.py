@@ -70,7 +70,7 @@ class update:
     @staticmethod
     def mails(from_file):
         if from_file in os.listdir('.'):
-            with open(spammer.data.proxies_file, 'a+') as current_mails_file:
+            with open(spammer.data.mails_file, 'a+') as current_mails_file:
                 with open(from_file, 'r') as new_mails:
                     current_mails = current_mails_file.read().split('\n')
                     new_mails = new_mails.read().split('\n')
@@ -80,7 +80,7 @@ class update:
                             new_mails_to_add.append(mail)
 
                     current_mails_file.write('\n'.join(new_mails_to_add) + '\n')
-            print('[INFO] Mails updated successfully')
+            print('[INFO] Mails updated successfully ({} totally)'.format(len(new_mails_to_add)))
         else:
             print('[ERROR] File with mails not found!')
 
@@ -104,7 +104,7 @@ class update:
                             new_targets_to_add.append(target)
 
                     current_targets_file.write('\n'.join(new_targets_to_add) + '\n')
-            print('[INFO] Targets updated successfully')
+            print('[INFO] Targets updated successfully ({} totally)'.format(len(new_targets_to_add)))
         else:
             print('[ERROR] File with targets not found!')
 
