@@ -193,6 +193,9 @@ def runcmd(cmd):
 
 
 if __name__ == '__main__':
+    update.proxies(spammer.data.proxies_file)
+    update.mails(spammer.data.mails_file)
+    update.targets(spammer.data.targets_file)
     try:
         while True:
             cmd = input('CMD> ')

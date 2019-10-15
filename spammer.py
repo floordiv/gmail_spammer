@@ -177,7 +177,7 @@ def _add_bad_proxy(proxy):
         bad_proxies_file.write(proxy + '\n')
 
 
-def __init():
+def init():
     print(data.header + 'by @floordiv,', 'version:', data.version, '\n')
     print('[INFO] Starting spammer...')
 
@@ -213,11 +213,3 @@ def __init():
         proxies_totally = index + 1
     print('[INFO] Proxies loaded successfully ({} totally)'.format(proxies_totally))
     return True
-
-
-def init():
-    # handler_updater = threading.Thread(target=__load_handler)
-    # main_process = threading.Thread(target=__init)
-    # handler_updater.start()
-    # main_process.start()
-    __init()
