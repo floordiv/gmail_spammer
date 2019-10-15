@@ -47,6 +47,7 @@ class update:
                             new_proxies_to_add.append(proxy)
 
                     current_proxies_file.write('\n'.join(new_proxies_to_add) + '\n')
+                    spammer.data.proxies.append(new_proxies_to_add)
             print('[INFO] Proxies updated successfully')
         else:
             print('[ERROR] File with proxies not found!')
@@ -56,8 +57,7 @@ class update:
         with open(spammer.data.proxies_file, 'a') as current_proxies:
             if not update.__element_in_file(new_proxy, spammer.data.proxies_file):
                 current_proxies.write(new_proxy + '\n')
-            else:
-                print('[ERROR] Proxy exists!')
+        spammer.data.proxies.append(new_proxy)
         print('[INFO] Proxy added successfully')
 
     @staticmethod
@@ -65,6 +65,7 @@ class update:
         with open(spammer.data.mails_file, 'a') as mails_file:
             if not update.__element_in_file(new_mail, spammer.data.proxies_file):
                 mails_file.write(new_mail + '\n')
+        spammer.data.mails.append(new_mail)
         print('[INFO] Mail added successfully')
 
     @staticmethod
@@ -80,6 +81,7 @@ class update:
                             new_mails_to_add.append(mail)
 
                     current_mails_file.write('\n'.join(new_mails_to_add) + '\n')
+                    spammer.data.mails.append(new_mails_to_add)
             print('[INFO] Mails updated successfully ({} totally)'.format(len(new_mails_to_add)))
         else:
             print('[ERROR] File with mails not found!')
@@ -89,6 +91,7 @@ class update:
         with open(spammer.data.targets_file, 'a') as targets_file:
             if not update.__element_in_file(new_target, spammer.data.proxies_file):
                 targets_file.write(new_target + '\n')
+        spammer.data.targets.append(new_target)
         print('[INFO] Target added successfully')
 
     @staticmethod
@@ -104,6 +107,7 @@ class update:
                             new_targets_to_add.append(target)
 
                     current_targets_file.write('\n'.join(new_targets_to_add) + '\n')
+                    spammer.data.targets.append(new_targets_to_add)
             print('[INFO] Targets updated successfully ({} totally)'.format(len(new_targets_to_add)))
         else:
             print('[ERROR] File with targets not found!')
