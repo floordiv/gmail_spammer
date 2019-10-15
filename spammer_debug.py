@@ -59,23 +59,17 @@ def spam(text_from_file):
                         print('[INFO] Successfully connected: {}, port {}. Starting tls connection...'.format(smtp_method, port))
                         smtp.starttls()
                         print('[INFO] TLS connection started successfully')
-
-                        update_vars = True
                         while data.mails_index < len(data.mails):
                             while not data.pause:
-                                if update_vars:
-                                    current_proxy_index = data.proxy_index
-                                    current_target_index = data.targets_index
-                                    current_mail_index = data.mails_index
-                                    data.proxy_index += 1
-                                    data.targets_index += data.mails_per_account
-                                    data.mails_index += 1
-                                    update_vars = False
-                                try:
-                                    print('[INFO] Log in: {}'.format(data.mails[current_mail_index]))
-                                except IndexError:
-                                    update_vars = True
-                                    break
+                                current_proxy_index = data.proxy_index
+                                current_target_index = data.targets_index
+                                current_mail_index = data.mails_index
+                                data.proxy_index += 1
+                                data.targets_index += data.mails_per_account
+                                data.mails_index += 1
+
+                                # for element in range(current_target_index):
+                                print('[INFO] Log in: {}'.format(data.mails[current_mail_index]))
                                 current_mail_name, current_mail_password = data.mails[current_mail_index].split('/')
                                 try:
                                     smtp.login(current_mail_name, current_mail_password)
@@ -109,8 +103,6 @@ def spam(text_from_file):
                                     print('[ERROR] Login {}, password {}: can\'t send mail: {}'.format(current_mail_name,
                                                                                                        current_mail_password,
                                                                                                        str(exception_sending_mail)))
-                                update_vars = True
-
                 except Exception as exception_connecting:
                     print('[ERROR] {}: port {}: connection failed: {}'.format(smtp_method, port, str(exception_connecting)))
                     return
@@ -235,8 +227,6 @@ def init():
         if value.strip() == '':
             del data.targets[index3]
         targets_totally = index3 + 1
-    if type(targets_totally / mails_totally) == int:
-        data.mails_per_account = targets_totally / mails_totally
     for element in [['Proxies', proxies_totally], ['Mails', mails_totally], ['Targets', targets_totally]]:
         print('[INFO] {} loaded successfully ({} totally)'.format(element[0], element[1]))
     return True
