@@ -117,6 +117,9 @@ def spam(text_from_file):
 
         except Exception as exception:
             print('[ERROR] An error occurred while spamming: {}'.format(str(exception)))
+    data.proxy_index = 0
+    data.mails_index = 0
+    data.targets_index = 0
 
 
 def pause_spam():
