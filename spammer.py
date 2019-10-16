@@ -5,9 +5,11 @@ import logger
 import urllib
 import urllib.request
 import urllib.error
+from traceback import format_exc
 
 
 class data:
+    current_proxy = 0
     header = '''
     ╔══╦═══╦══╦╗──╔╦╗──╔╦═══╦═══╗
     ║╔═╣╔═╗║╔╗║║──║║║──║║╔══╣╔═╗║
@@ -32,33 +34,38 @@ class data:
     proxy = True    # use proxy
     pause = False   # pause spamming
     version = '1.0.5'
+    output = []
+
+
+def _print(*text):
+    data.output.append(' '.join(text))
 
 
 def spam(text_from_file):
-    print('[INFO] Starting spam (text: from file: {})'.format(text_from_file))
+    _print('[INFO] Starting spam (text: from file: {})'.format(text_from_file))
     if text_from_file in os.listdir('.'):
         with open(text_from_file, 'r') as text:
             text = text.read()
     else:
-        print('[ERROR] File with text not found: {}'.format(text_from_file))
+        _print('[ERROR] File with text not found: {}'.format(text_from_file))
     for smtp_method in data.smtp_objects:
-        print('[INFO] Connecting to the {}...'.format(smtp_method))
+        _print('[INFO] Connecting to the {}...'.format(smtp_method))
         try:
             for port in data.smtp_objects[smtp_method]:
                 try:
-                    print('[INFO] {}: trying port {}'.format(smtp_method, port))
+                    _print('[INFO] {}: trying port {}'.format(smtp_method, port))
                     try:
                         smtp = smtplib.SMTP(smtp_method, port)
                     except:
                         try:
                             smtp = smtplib.SMTP_SSL(smtp_method, port)
                         except:
-                            print('[ERROR] Failed to connect to the {}:{}'.format(smtp_method, port))
+                            _print('[ERROR] Failed to connect to the {}:{}'.format(smtp_method, port))
                             continue
                     else:
-                        print('[INFO] Successfully connected: {}, port {}. Starting tls connection...'.format(smtp_method, port))
+                        _print('[INFO] Successfully connected: {}, port {}. Starting tls connection...'.format(smtp_method, port))
                         smtp.starttls()
-                        print('[INFO] TLS connection started successfully')
+                        _print('[INFO] TLS connection started successfully')
 
                         update_vars = True
                         while data.mails_index < len(data.mails):
@@ -72,17 +79,17 @@ def spam(text_from_file):
                                     data.mails_index += 1
                                     update_vars = False
                                 try:
-                                    print('[INFO] Log in: {}'.format(data.mails[current_mail_index]))
+                                    _print('[INFO] Log in: {}'.format(data.mails[current_mail_index]))
                                 except IndexError:
                                     update_vars = True
                                     break
                                 current_mail_name, current_mail_password = data.mails[current_mail_index].split('/')
                                 try:
                                     smtp.login(current_mail_name, current_mail_password)
-                                    print('[INFO] Login {}, password {}: Logged in successfully'.format(current_mail_name,
+                                    _print('[INFO] Login {}, password {}: Logged in successfully'.format(current_mail_name,
                                                                                                         current_mail_password))
                                 except Exception as exception_login:
-                                    print('[ERROR] Login {}, password {}: can\'t login: {}'.format(current_mail_name, current_mail_password,
+                                    _print('[ERROR] Login {}, password {}: can\'t login: {}'.format(current_mail_name, current_mail_password,
                                                                                                    str(
                                                                                                        exception_login)))
                                 finished = False
@@ -90,7 +97,7 @@ def spam(text_from_file):
                                 current_mails_per_account = data.mails_per_account
                                 while not finished:
                                     if current_mails_per_account == 0:
-                                        print('[INFO] Spam finished: no more targets')
+                                        _print('[INFO] Spam finished: no more targets')
                                         finished = True
                                         return True
                                     try:
@@ -103,20 +110,22 @@ def spam(text_from_file):
                                     if targets is []:
                                         continue
                                     smtp.sendmail(current_mail_name, targets, text)
-                                    print('[INFO] Login: {}, password {}: mail successfully sent'.format(current_mail_name,
+                                    _print('[INFO] Login: {}, password {}: mail successfully sent'.format(current_mail_name,
                                                                                                          current_mail_password))
                                 except Exception as exception_sending_mail:
-                                    print('[ERROR] Login {}, password {}: can\'t send mail: {}'.format(current_mail_name,
+                                    _print('[ERROR] Login {}, password {}: can\'t send mail: {}'.format(current_mail_name,
                                                                                                        current_mail_password,
                                                                                                        str(exception_sending_mail)))
+                                    _print('[DETAILS] Additional info about error:\n', format_exc())
                                 update_vars = True
 
                 except Exception as exception_connecting:
-                    print('[ERROR] {}: port {}: connection failed: {}'.format(smtp_method, port, str(exception_connecting)))
+                    _print('[ERROR] {}: port {}: connection failed: {}'.format(smtp_method, port, str(exception_connecting)))
+                    _print('[DETAILS] More error information:\n', format_exc())
                     return
 
         except Exception as exception:
-            print('[ERROR] An error occurred while spamming: {}'.format(str(exception)))
+            _print('[ERROR] An error occurred while spamming: {}'.format(str(exception)))
     data.proxy_index = 0
     data.mails_index = 0
     data.targets_index = 0
@@ -133,53 +142,55 @@ def continue_spam():
 def gethelp():
     try:
         with open('help.txt', 'r') as help_text:
-            print(help_text.read())
+            _print(help_text.read())
     except FileNotFoundError:
-        print('[ERROR] Help is unavailable: manual file doesn\'t exists')
+        _print('[ERROR] Help is unavailable: manual file doesn\'t exists')
 
 
 def test_proxies(test_url='google.com'):     # test url - without http or https (write it in proxies_type)
-    logger.write('log', 'Testing https proxies...')
+    # logger.write('log', 'Testing https proxies...')
     bad_proxies = 0
     good_proxies = 0
     index = 1
     file = data.proxies_file
+    curr_index = data.current_proxy
+    data.current_proxy += 1
     try:
-        print('This can take a while. Press ctrl+c to finish testing')
+        _print('proxies-check', 'This can take a while. Press ctrl+c to finish testing')
         if file in os.listdir('.'):
             with open(file, 'r') as proxies:
                 proxies = proxies.read().split('\n')
-        for proxy in proxies:
-            valid = True
-            try:
-                proxy_handler = urllib.request.ProxyHandler({'https': proxy})
-                opener = urllib.request.build_opener(proxy_handler)
-                opener.addheaders = [('User-agent', 'Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.1; WOW64; Trident/5.0; SLCC2; .NET CLR'
-                                                    ' 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0; .NET4.0C; '
-                                                    '.NET4.0E; InfoPath.3; Creative AutoUpdate v1.40.02)')]
-                urllib.request.install_opener(opener)
-                req = urllib.request.Request(f'https://{test_url}')
-                sock = urllib.request.urlopen(req)
-            except urllib.error.HTTPError as e:
-                print('{}. {}: error: {}'.format(index, proxy, e))
-                logger.write('log', '{}. {}: error: {}'.format(index, proxy, e))
-                valid = False
-            except Exception as detail:
-                print('{}. {}: error: {}'.format(index, proxy, detail))
-                valid = False
-            if not valid:
-                bad_proxies += 1
-                _add_bad_proxy(proxy)
-            else:
-                good_proxies += 1
-                print('{}. {}: valid'.format(index, proxy))
-            index += 1
+        # for proxy in proxies:
+        valid = True
+        try:
+            proxy_handler = urllib.request.ProxyHandler({'https': proxies[curr_index]})
+            opener = urllib.request.build_opener(proxy_handler)
+            opener.addheaders = [('User-agent', 'Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.1; WOW64; Trident/5.0; SLCC2; .NET CLR'
+                                                ' 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0; .NET4.0C; '
+                                                '.NET4.0E; InfoPath.3; Creative AutoUpdate v1.40.02)')]
+            urllib.request.install_opener(opener)
+            req = urllib.request.Request(f'https://{test_url}')
+            sock = urllib.request.urlopen(req)
+        except urllib.error.HTTPError as e:
+            _print('proxies-check', '{}. {}: error: {}'.format(index, proxies[curr_index], e))
+            # logger.write('log', '{}. {}: error: {}'.format(index, proxies[curr_index], e))
+            valid = False
+        except Exception as detail:
+            _print('proxies-check', '{}. {}: error: {}'.format(index, proxies[curr_index], detail))
+            valid = False
+        if not valid:
+            bad_proxies += 1
+            _add_bad_proxy(proxies[curr_index])
+        else:
+            good_proxies += 1
+            _print('proxies-check', '{}. {}: valid'.format(index, proxies[curr_index]))
+        index += 1
     except KeyboardInterrupt:
-        print('Finishing test. Good proxies: {}, bad proxies: {}, totally proxies checked: {}'.format(good_proxies, bad_proxies, index - 1))
-        logger.write('log', 'https proxies test were forcibly completed. Totally checked: {}; good proxies: {}; bad proxies: {}'.format(index - 1, good_proxies, bad_proxies))
+        _print('Finishing test. Good proxies: {}, bad proxies: {}, totally proxies checked: {}'.format(good_proxies, bad_proxies, index - 1))
+        logger.write('proxies_tests', 'https proxies test were forcibly completed. Totally checked: {}; good proxies: {}; bad proxies: {}'.format(index - 1, good_proxies, bad_proxies))
 
-    print('https proxies testing has successfully finished. Totally proxies checked: {}, bad proxies: {}, good proxies: {}'.format(index - 1, bad_proxies, good_proxies))
-    logger.write('log', 'https proxies testing has successfully finished. Totally proxies checked: {}; bad proxies: {}; good proxies: {}'.format(index - 1, bad_proxies, good_proxies))
+    _print('https proxies testing has successfully finished. Totally proxies checked: {}, bad proxies: {}, good proxies: {}'.format(index - 1, bad_proxies, good_proxies))
+    logger.write('proxies_tests', 'https proxies testing has successfully finished. Totally proxies checked: {}; bad proxies: {}; good proxies: {}'.format(index - 1, bad_proxies, good_proxies))
 
 
 def _add_bad_proxy(proxy):
@@ -198,7 +209,7 @@ def init():
         if file not in os.listdir('.'):
             errors['files_doesnt_exists'].append(file)
     if len(errors['files_doesnt_exists']) > 0:
-        print('[FATAL] Files doesn\'t exists: {}'.format(', '.join(errors['files_doesnt_exists'])))
+        _print('[FATAL] Files doesn\'t exists: {}'.format(', '.join(errors['files_doesnt_exists'])))
         return errors
     print('[INFO] All the required files exists')
     print('[INFO] Loading settings...')

@@ -1,6 +1,8 @@
 import spammer
 import os
 import re
+import threading
+import logger
 
 spammer.init()
 
@@ -79,7 +81,8 @@ class update:
                     for mail in current_mails:
                         if mail not in new_mails:
                             new_mails_to_add.append(mail)
-
+                    # print('Okay, you caught me. I agree, it\'s my fault. So, what\'s next? You will punish me? Fuck you!\n(actually, this'
+                    #       ' is the thing I have to write to the file:', "\n".join(new_mails_to_add), ')')
                     current_mails_file.write('\n'.join(new_mails_to_add))
                     spammer.data.mails.append(new_mails_to_add)
             print('[INFO] Mails updated successfully ({} totally)'.format(len(new_mails_to_add)))
@@ -185,7 +188,12 @@ def runcmd(cmd):
         if cmd_text[0] == 'update':
             update_commands[cmd_text[1]](cmd_text[2])
         elif cmd_text[0] == 'start':
-            another_commands[cmd_text[1]](cmd_text[2])
+            if 'threads' in cmd['sub_arguments']:
+                threads = int(cmd_text[-1])
+            else:
+                threads = 10
+            for i in range(threads):
+                threading.Thread(target=another_commands[cmd_text[1]], args=cmd_text[2])
         else:
             another_commands[cmd_text[0]]()
     except IndexError:
@@ -196,16 +204,20 @@ def runcmd(cmd):
         print('[ERROR] Unknown command: {}'.format(str(exception)))
 
 
+# __name__ = 'eger'
 if __name__ == '__main__':
     # update.proxies(spammer.data.proxies_file)
     # update.mails(spammer.data.mails_file)
     # update.targets(spammer.data.targets_file)
     try:
         while True:
+            last_output_len = len(spammer.data.output) - 1
             cmd = input('CMD> ')
             if cmd.strip().lower() in ['quit', 'exit']:
                 print('[INFO] Stopping spammer...')
                 break
             runcmd(cmd)
+            if len(spammer.data.output) - 1 > last_output_len:
+                logger.write('\n'.join(spammer.data.output[last_output_len:]))
     except KeyboardInterrupt:
         print('\n[INFO] Stopping spammer...')

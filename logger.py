@@ -2,7 +2,7 @@ import datetime
 import os
 
 
-def write(text, file):
+def write(file, text):
     if 'log' not in os.listdir('.'):
         os.mkdir('log')
     if file in os.listdir('log'):
