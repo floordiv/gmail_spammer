@@ -151,7 +151,6 @@ def runcmd(cmd):
         'set': update.edit_setting
     }
     another_commands = {
-        'proxies-test': spammer.test_proxies,
         'pause': spammer.pause_spam,
         'continue': spammer.continue_spam,
         'spam': spammer.spam,

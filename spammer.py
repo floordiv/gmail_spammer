@@ -1,11 +1,6 @@
 import smtplib
 import os
 import json
-import logger
-import shell
-import urllib
-import urllib.request
-import urllib.error
 from traceback import format_exc
 from time import sleep
 
@@ -25,6 +20,7 @@ class data:
     targets = []
     targets_index = 0
     threads = []
+    err_text = False
     required_files = ['mails.txt', 'targets.txt']
     smtp_objects = {    # email hosts and hosts (if an error will be occurred while connecting one of them)
         'smtp.gmail.com': [465, 587]
@@ -35,6 +31,59 @@ class data:
     version = '1.0.5'
     timeout = 0.1
     output = []
+
+
+def print_err(err):
+    if data.err_text:
+        print('[DETAILS] Additional info about error:\n', err)
+
+
+def init():
+    print(data.header + 'by @floordiv,', 'version:', data.version, '\n')
+    print('[INFO] Starting spammer...')
+
+    errors = {'files_doesnt_exists': [], 'smtp_addresses_errors': [],}
+    print('[INFO] Checking files...')
+    for file in data.required_files:
+        if file not in os.listdir('.'):
+            errors['files_doesnt_exists'].append(file)
+    if len(errors['files_doesnt_exists']) > 0:
+        print('[FATAL] Files doesn\'t exists: {}'.format(', '.join(errors['files_doesnt_exists'])))
+        return errors
+    print('[INFO] All the required files exists')
+    print('[INFO] Loading settings...')
+    try:
+        with open('settings.json', 'r') as settings:
+            settings = json.load(settings)[0]
+        print('[INFO] Settings loaded successfully. Applying...')
+
+        for key in settings:
+            # data.__dict__[key] = settings[key]
+            setattr(data, key, settings[key])
+        print('[INFO] Settings applied')
+    except FileNotFoundError:
+        print('[ERROR] Settings file not found. Using default values')
+    with open(data.mails_file, 'r') as mails:
+        data.mails = mails.read().split('\n')
+    with open(data.targets_file, 'r') as targets:
+        data.targets = targets.read().split('\n')
+    mails_totally = 1
+    targets_totally = 1
+    for each in enumerate(data.mails):
+        index2, value = each
+        if value.strip() == '':
+            del data.mails[index2]
+        mails_totally = index2 + 1
+    for each in enumerate(data.targets):
+        index3, value = each
+        if value.strip() == '':
+            del data.targets[index3]
+        targets_totally = index3 + 1
+    if type(targets_totally / mails_totally) == int:
+        data.mails_per_account = targets_totally / mails_totally
+    for element in [['Mails', mails_totally], ['Targets', targets_totally]]:
+        print('[INFO] {} loaded successfully ({} totally)'.format(element[0], element[1]))
+    return True
 
 
 def spam(text_from_file):
@@ -115,10 +164,12 @@ def spam(text_from_file):
                                     print('[ERROR] Login {}, password {}: can\'t send mail: {}'.format(current_mail_name,
                                                                                                        current_mail_password,
                                                                                                        str(exception_sending_mail)))
-                                    print('[DETAILS] Additional info about error:\n', format_exc())
+                                    # print('[DETAILS] Additional info about error:\n', format_exc())
+                                    print_err(format_exc())
                                 update_vars = True
                             except KeyboardInterrupt:
                                 data.pause = True
+                                import shell
                                 while True:
                                     user_input = input('CMD> ')
                                     if user_input == 'stop':
@@ -130,7 +181,8 @@ def spam(text_from_file):
 
                 except Exception as exception_connecting:
                     print('[ERROR] {}: port {}: connection failed: {}'.format(smtp_method, port, str(exception_connecting)))
-                    print('[DETAILS] More error information:\n', format_exc())
+                    # print('[DETAILS] More error information:\n', format_exc())
+                    print_err(format_exc())
                     return
 
         except Exception as exception:
@@ -154,51 +206,3 @@ def gethelp():
             print(help_text.read())
     except FileNotFoundError:
         print('[ERROR] Help is unavailable: manual file doesn\'t exists')
-
-
-def init():
-    print(data.header + 'by @floordiv,', 'version:', data.version, '\n')
-    print('[INFO] Starting spammer...')
-
-    errors = {'files_doesnt_exists': [], 'smtp_addresses_errors': [],}
-    print('[INFO] Checking files...')
-    for file in data.required_files:
-        if file not in os.listdir('.'):
-            errors['files_doesnt_exists'].append(file)
-    if len(errors['files_doesnt_exists']) > 0:
-        print('[FATAL] Files doesn\'t exists: {}'.format(', '.join(errors['files_doesnt_exists'])))
-        return errors
-    print('[INFO] All the required files exists')
-    print('[INFO] Loading settings...')
-    try:
-        with open('settings.json', 'r') as settings:
-            settings = json.load(settings)[0]
-        print('[INFO] Settings loaded successfully. Applying...')
-
-        for key in settings:
-            # data.__dict__[key] = settings[key]
-            setattr(data, key, settings[key])
-        print('[INFO] Settings applied')
-    except FileNotFoundError:
-        print('[ERROR] Settings file not found. Using default values')
-    with open(data.mails_file, 'r') as mails:
-        data.mails = mails.read().split('\n')
-    with open(data.targets_file, 'r') as targets:
-        data.targets = targets.read().split('\n')
-    mails_totally = 1
-    targets_totally = 1
-    for each in enumerate(data.mails):
-        index2, value = each
-        if value.strip() == '':
-            del data.mails[index2]
-        mails_totally = index2 + 1
-    for each in enumerate(data.targets):
-        index3, value = each
-        if value.strip() == '':
-            del data.targets[index3]
-        targets_totally = index3 + 1
-    if type(targets_totally / mails_totally) == int:
-        data.mails_per_account = targets_totally / mails_totally
-    for element in [['Mails', mails_totally], ['Targets', targets_totally]]:
-        print('[INFO] {} loaded successfully ({} totally)'.format(element[0], element[1]))
-    return True
