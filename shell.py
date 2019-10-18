@@ -2,7 +2,7 @@ import spammer
 import os
 import re
 import threading
-import logger
+import json
 
 spammer.init()
 
@@ -14,13 +14,6 @@ class update:
             with open(file, 'r') as file:
                 file = file.read().split('\n')
             return True if element in file else False
-
-    @staticmethod
-    def proxies_file(file):
-        if file in os.listdir('.'):
-            spammer.data.proxies_file = file
-        else:
-            print('[ERROR] File with proxies not found!')
 
     @staticmethod
     def mails_file(file):
@@ -35,32 +28,6 @@ class update:
             spammer.data.targets_file = file
         else:
             print('[ERROR] File with targets not found!')
-
-    @staticmethod
-    def proxies(from_file):
-        if from_file in os.listdir('.'):
-            with open(spammer.data.proxies_file, 'r+') as current_proxies_file:
-                with open(from_file, 'r') as new_proxies:
-                    current_proxies = current_proxies_file.read().split('\n')
-                    new_proxies = new_proxies.read().split('\n')
-                    new_proxies_to_add = []
-                    for proxy in current_proxies:
-                        if proxy not in new_proxies:
-                            new_proxies_to_add.append(proxy)
-
-                    current_proxies_file.write('\n'.join(new_proxies_to_add))
-                    spammer.data.proxies.append(new_proxies_to_add)
-            print('[INFO] Proxies updated successfully')
-        else:
-            print('[ERROR] File with proxies not found!')
-
-    @staticmethod
-    def proxy(new_proxy):
-        with open(spammer.data.proxies_file, 'a') as current_proxies:
-            if not update.__element_in_file(new_proxy, spammer.data.proxies_file):
-                current_proxies.write(new_proxy + '\n')
-        spammer.data.proxies.append(new_proxy)
-        print('[INFO] Proxy added successfully')
 
     @staticmethod
     def mail(new_mail):
@@ -115,6 +82,14 @@ class update:
         else:
             print('[ERROR] File with targets not found!')
 
+    @staticmethod
+    def edit_setting(name, new_arg):
+        with open('settings.json', 'r') as settings_file:
+            settings = json.load(settings_file)
+        settings[name] = new_arg
+        with open('settings.json', 'w') as new_settings:
+            json.dump(settings, new_settings)
+
 
 def parse(text, config=None):
     if config is None:
@@ -167,15 +142,13 @@ def runcmd(cmd):
     cmd = parse(cmd)
     cmd_text = cmd['nonarguments']
     update_commands = {
-        'proxy-file': update.proxies_file,
         'mail-file': update.mails_file,
         'targets-file': update.targets_file,
-        'proxy': update.proxy,
         'mail': update.mail,
         'target': update.target,
-        'proxies': update.proxies,
         'mails': update.mails,
         'targets': update.targets,
+        'set': update.edit_setting
     }
     another_commands = {
         'proxies-test': spammer.test_proxies,
@@ -189,35 +162,39 @@ def runcmd(cmd):
             update_commands[cmd_text[1]](cmd_text[2])
         elif cmd_text[0] == 'start':
             if 'threads' in cmd['sub_arguments']:
-                threads = int(cmd_text[-1])
+                threads_arg_index = cmd['sub_arguments'].index('threads')
+                threads = int(cmd['sub_arguments'][threads_arg_index])
             else:
                 threads = 10
+            if 'timeout' in cmd['sub_arguments']:
+                timeout_arg_index = cmd['sub_arguments'].index('timeout')
+                spammer.data.timeout = int(cmd['sub_arguments'][timeout_arg_index])
             for i in range(threads):
-                threading.Thread(target=another_commands[cmd_text[1]], args=cmd_text[2])
+                var = threading.Thread(target=another_commands[cmd_text[1]], args=[str(cmd_text[2])])
+                spammer.data.threads.append(var)
+                var.start()
+        elif cmd_text[0] == 'set':
+            update_commands[cmd_text[0]](cmd_text[1], cmd_text[2])
         else:
             another_commands[cmd_text[0]]()
     except IndexError:
         print('[ERROR] Maybe, you forgot some arguments? Enter command "help"')
     except TypeError:
-        print('[ERROR] Maybe, you forgot some arguments? Enter command "help"')
+        print('[ERROR] Maybe, you forgot some arguments or entered them wrong? Enter command "help"')
     except KeyError as exception:
         print('[ERROR] Unknown command: {}'.format(str(exception)))
 
 
 # __name__ = 'eger'
 if __name__ == '__main__':
-    # update.proxies(spammer.data.proxies_file)
-    # update.mails(spammer.data.mails_file)
-    # update.targets(spammer.data.targets_file)
     try:
+        print('Type "help" for more info')
         while True:
-            last_output_len = len(spammer.data.output) - 1
             cmd = input('CMD> ')
             if cmd.strip().lower() in ['quit', 'exit']:
                 print('[INFO] Stopping spammer...')
                 break
             runcmd(cmd)
-            if len(spammer.data.output) - 1 > last_output_len:
-                logger.write('\n'.join(spammer.data.output[last_output_len:]))
     except KeyboardInterrupt:
         print('\n[INFO] Stopping spammer...')
+

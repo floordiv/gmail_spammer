@@ -2,23 +2,32 @@ Spammer, made by floordiv, v. 1.0.0
 
 commands:
     update:
-        proxy [proxy; ip:port] - add proxy to the list
         mail [mail; mail/password] - add mail to the list
         target [mail; mail] - add target to the list
 
-        proxies [file; from file] - add proxies from given file
         mails [file; from file] - add mails from given file
         targets [file; from file] - add targets from given file
 
-        proxies-file [file; new file] - change default file with proxies
         mails-file [file; new file] - change default file with mails
         targets-file [file; new file] - change default file with targets
 
-     start:
+    start:
         spam [file; file with a message, which should be sent] - run a spam. Warning: file with a spam text have to be
         in the same folder with a spammer
+            * additional arguments:
+                --threads [threads quantity] - start spam with [threads quantity] threads
+                --timeout [seconds] - send mails with timeout [seconds] seconds
 
         proxies-test - run a proxies test (from default file with proxies); check for broken proxies
+            * additional arguments:
+                --threads [threads quantity] - start spam with [threads quantity] threads
+                --timeout [seconds] - send mails with timeout [seconds] seconds
+
+    set:
+        [variable name] [new value] - set new value in settings
+            * possible variables:
+                mails_per_account (value: integer) - how much mails will be sent from the each of the mail account
+                mails_file (value: string) (the same command is "update mails-file")
 
      pause - pause spamming
      continue - continue spamming
