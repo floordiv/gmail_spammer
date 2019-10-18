@@ -86,6 +86,11 @@ def init():
     return True
 
 
+def __get_valid_text(email, text):
+    text = 'From: {}\n'.format(email) + text
+    return text
+
+
 def spam(text_from_file):
     print('[HELP] Press ctrl+c to pause and enter "continue" to resume spam')
     print('[INFO] Starting spam (text: from file: {})'.format(text_from_file))
@@ -156,6 +161,7 @@ def spam(text_from_file):
                                 try:
                                     if targets is []:
                                         continue
+                                    text = __get_valid_text(current_mail_name, text)
                                     sleep(data.timeout)
                                     smtp.sendmail(current_mail_name, targets, text)
                                     print('[INFO] Login: {}, password {}: mail successfully sent'.format(current_mail_name,
