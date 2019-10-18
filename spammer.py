@@ -28,7 +28,7 @@ class data:
     mails_per_account = 5   # how much mails send per one mail
     proxy = True    # use proxy
     pause = False   # pause spamming
-    version = '1.0.5'
+    version = '1.0.7'
     timeout = 0.1
     output = []
 

@@ -1,4 +1,4 @@
-Spammer, made by floordiv, v. 1.0.0
+Spammer, made by floordiv, v. 1.0.7
 
 commands:
     update:
