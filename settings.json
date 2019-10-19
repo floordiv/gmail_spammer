@@ -1,1 +1,1 @@
-[{"mails_file": "mails.txt", "targets_file": "targets.txt", "proxies_file": "proxies.txt", "auto_proxy_test": false, "smtp_objects": {"smtp.gmail.com": [465, 587]}, "mails_per_account": 3}]
+[{"mails_file": "mails.txt", "targets_file": "targets.txt", "proxies_file": "proxies.txt", "auto_proxy_test": false, "developer": false, "smtp_objects": {"smtp.gmail.com": [465, 587]}, "mails_per_account": 3}]

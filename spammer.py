@@ -28,7 +28,7 @@ class data:
     proxy_index = 0
     threads = []
     bad_proxies = []
-    developer = False
+    developer = 0
     auto_proxy_test = False
     required_files = ['mails.txt', 'targets.txt']
     smtp_objects = {    # email hosts and hosts (if an error will be occurred while connecting one of them)
@@ -178,7 +178,7 @@ def _add_bad_proxy(proxy):
 
 
 def print_err(err):
-    if data.developer:
+    if data.developer == 1:
         print('[DETAILS] Additional info about error:\n', err)
 
 
