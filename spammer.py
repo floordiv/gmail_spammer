@@ -28,7 +28,7 @@ class data:
     proxy_index = 0
     threads = []
     bad_proxies = []
-    err_text = False
+    developer = False
     auto_proxy_test = False
     required_files = ['mails.txt', 'targets.txt']
     smtp_objects = {    # email hosts and hosts (if an error will be occurred while connecting one of them)
@@ -178,7 +178,7 @@ def _add_bad_proxy(proxy):
 
 
 def print_err(err):
-    if data.err_text:
+    if data.developer:
         print('[DETAILS] Additional info about error:\n', err)
 
 
@@ -269,18 +269,21 @@ def spam(text_from_file):
                         good_port = __get_correct_port(url, data.smtp_objects[url])
                         if good_port is None:
                             print('[ERROR] Connection failed: bad ports')
+                            print_err(format_exc())
                             finished = True
                             break
                         # conn_type = __get_conn_type(url, good_port)
                         conn = ProxySMTP(host=url, port=good_port, p_address=data.proxies[current_proxy_index].split(':')[0], p_port=data.proxies[current_proxy_index].split(':')[1])
                         if conn is None:
                             print('[ERROR] Connection failed: connection types are wrong! (usual and ssl)')
+                            print_err(format_exc())
                             finished = True
                             break
                         try:
                             conn.starttls()
                         except Exception as exception_starting_tls:
                             print('[ERROR] TLS connection failed: {}'.format(exception_starting_tls))
+                            print_err(format_exc())
                             continue
                         mail_login = data.mails[current_mail_index].split('/')[0]
                         mail_password = data.mails[current_mail_index].split('/')[1]
@@ -288,6 +291,7 @@ def spam(text_from_file):
                             conn.login(mail_login, mail_password)
                         except Exception as exception_login:
                             print('[ERROR] Login {}, password {}: login error: {}'.format(mail_login, mail_password, exception_login))
+                            print_err(format_exc())
                             continue
                         __finished = False
                         targets = []
@@ -298,8 +302,7 @@ def spam(text_from_file):
                                 finished = True
                                 return True
                             try:
-                                targets = [i for i in
-                                           data.targets[current_target_index:current_mail_index + current_mails_per_account]]
+                                targets = [i for i in data.targets[current_target_index:current_mail_index + current_mails_per_account]]
                                 finished = True
                             except IndexError:
                                 current_mails_per_account -= 1
@@ -313,6 +316,7 @@ def spam(text_from_file):
                             print('[ERROR] Mail send failure: login {}, password {}: {}'.format(mail_login, mail_password, exception_sending_mail))
                     except Exception as exception:
                         print('[ERROR] An exception occurred while spamming: {}'.format(exception))
+                        print_err(format_exc())
                 finished = True
                 print('[INFO] Spam finished!')
             except KeyboardInterrupt:

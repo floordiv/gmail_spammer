@@ -208,7 +208,7 @@ def runcmd(cmd):
                 spammer.data.timeout = int(cmd['sub_arguments'][timeout_arg_index])
             for i in range(threads):
                 var = threading.Thread(target=another_commands[cmd_text[1]], args=[str(cmd_text[2])])
-                
+
                 spammer.data.threads.append(var)
                 var.start()
             for each in spammer.data.threads:
