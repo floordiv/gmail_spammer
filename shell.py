@@ -30,9 +30,16 @@ class update:
             print('[ERROR] File with targets not found!')
 
     @staticmethod
+    def proxies_file(file):
+        if file in os.listdir('.'):
+            spammer.data.proxies_file = file
+        else:
+            print('[ERROR] File with proxies not found!')
+
+    @staticmethod
     def mail(new_mail):
         with open(spammer.data.mails_file, 'a') as mails_file:
-            if not update.__element_in_file(new_mail, spammer.data.proxies_file):
+            if not update.__element_in_file(new_mail, spammer.data.mails_file):
                 mails_file.write(new_mail + '\n')
         spammer.data.mails.append(new_mail)
         print('[INFO] Mail added successfully')
@@ -59,7 +66,7 @@ class update:
     @staticmethod
     def target(new_target):
         with open(spammer.data.targets_file, 'a') as targets_file:
-            if not update.__element_in_file(new_target, spammer.data.proxies_file):
+            if not update.__element_in_file(new_target, spammer.data.target_file):
                 targets_file.write(new_target + '\n')
         spammer.data.targets.append(new_target)
         print('[INFO] Target added successfully')
@@ -67,7 +74,7 @@ class update:
     @staticmethod
     def targets(from_file):
         if from_file in os.listdir('.'):
-            with open(spammer.data.proxies_file, 'r+') as current_targets_file:
+            with open(spammer.data.targets_file, 'r+') as current_targets_file:
                 with open(from_file, 'r') as new_targets:
                     current_targets = current_targets_file.read().split('\n')
                     new_targets = new_targets.read().split('\n')
@@ -79,6 +86,32 @@ class update:
                     current_targets_file.write('\n'.join(new_targets_to_add) + '\n')
                     spammer.data.targets.append(new_targets_to_add)
             print('[INFO] Targets updated successfully ({} totally)'.format(len(new_targets_to_add)))
+        else:
+            print('[ERROR] File with targets not found!')
+
+    @staticmethod
+    def proxy(new_proxy):
+        with open(spammer.data.proxies_file, 'a') as proxies_file:
+            if not update.__element_in_file(new_proxy, spammer.data.proxies_file):
+                proxies_file.write(new_proxy + '\n')
+        spammer.data.mails.append(new_proxy)
+        print('[INFO] Proxy added successfully')
+
+    @staticmethod
+    def proxies(from_file):
+        if from_file in os.listdir('.'):
+            with open(spammer.data.proxies_file, 'r+') as current_proxies_file:
+                with open(from_file, 'r') as new_proxies:
+                    current_proxies = current_proxies_file.read().split('\n')
+                    new_proxies = new_proxies.read().split('\n')
+                    new_proxies_to_add = []
+                    for proxy in current_proxies:
+                        if proxy not in new_proxies and proxy.strip() != '':
+                            new_proxies_to_add.append(proxy)
+
+                    current_proxies_file.write('\n'.join(new_proxies_to_add) + '\n')
+                    spammer.data.targets.append(new_proxies_to_add)
+            print('[INFO] Targets updated successfully ({} totally)'.format(len(new_proxies_to_add)))
         else:
             print('[ERROR] File with targets not found!')
 
@@ -144,10 +177,13 @@ def runcmd(cmd):
     update_commands = {
         'mail-file': update.mails_file,
         'targets-file': update.targets_file,
+        'proxy-file': update.proxies_file,
         'mail': update.mail,
         'target': update.target,
+        'proxy': update.proxy,
         'mails': update.mails,
         'targets': update.targets,
+        'proxies': update.proxies,
         'set': update.edit_setting
     }
     another_commands = {
@@ -160,6 +196,8 @@ def runcmd(cmd):
         if cmd_text[0] == 'update':
             update_commands[cmd_text[1]](cmd_text[2])
         elif cmd_text[0] == 'start':
+            if cmd_text[1] == 'spam':
+                print('[HELP] Press ctrl+c to pause and enter "continue" to resume spam')
             if 'threads' in cmd['sub_arguments']:
                 threads_arg_index = cmd['sub_arguments'].index('threads')
                 threads = int(cmd['sub_arguments'][threads_arg_index])
@@ -170,8 +208,11 @@ def runcmd(cmd):
                 spammer.data.timeout = int(cmd['sub_arguments'][timeout_arg_index])
             for i in range(threads):
                 var = threading.Thread(target=another_commands[cmd_text[1]], args=[str(cmd_text[2])])
+                
                 spammer.data.threads.append(var)
                 var.start()
+            for each in spammer.data.threads:
+                each.join()
         elif cmd_text[0] == 'set':
             update_commands[cmd_text[0]](cmd_text[1], cmd_text[2])
         else:

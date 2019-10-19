@@ -28,6 +28,7 @@ commands:
             * possible variables:
                 mails_per_account (value: integer) - how much mails will be sent from the each of the mail account
                 mails_file (value: string) (the same command is "update mails-file")
+                auto_proxy_test [bool; true or false] - check proxy before each account login
 
      pause - pause spamming
      continue - continue spamming
