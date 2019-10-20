@@ -119,7 +119,8 @@ class update:
     def edit_setting(name, new_arg):
         with open('settings.json', 'r') as settings_file:
             settings = json.load(settings_file)
-        settings[name] = new_arg
+        settings[0][name] = new_arg
+        setattr(spammer.data, name, new_arg)
         with open('settings.json', 'w') as new_settings:
             json.dump(settings, new_settings)
 
@@ -196,8 +197,8 @@ def runcmd(cmd):
         if cmd_text[0] == 'update':
             update_commands[cmd_text[1]](cmd_text[2])
         elif cmd_text[0] == 'start':
-            if cmd_text[1] == 'spam':
-                print('[HELP] Press ctrl+c to pause and enter "continue" to resume spam')
+            # if cmd_text[1] == 'spam':
+            # print('[HELP] Press ctrl+c to pause and enter "continue" to resume spam')
             if 'threads' in cmd['sub_arguments']:
                 threads_arg_index = cmd['sub_arguments'].index('threads')
                 threads = int(cmd['sub_arguments'][threads_arg_index])
@@ -237,4 +238,8 @@ if __name__ == '__main__':
             runcmd(cmd)
     except KeyboardInterrupt:
         print('\n[INFO] Stopping spammer...')
+        if spammer.data.threads == []:
+            print('Press ctrl+c one more time to exit')
+        exit()
+
 

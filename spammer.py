@@ -307,7 +307,7 @@ def spam(text_from_file):
                             except IndexError:
                                 current_mails_per_account -= 1
                         try:
-                            if targets is []:
+                            if targets == []:
                                 continue
                             text = __get_valid_text(mail_login, text)
                             sleep(data.timeout)
@@ -318,6 +318,7 @@ def spam(text_from_file):
                         print('[ERROR] An exception occurred while spamming: {}'.format(exception))
                         print_err(format_exc())
                 finished = True
+                data.threads = []
                 print('[INFO] Spam finished!')
             except KeyboardInterrupt:
                 print('[INFO] Spam paused. Type "continue" to continue spam')
