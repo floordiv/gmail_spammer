@@ -266,7 +266,6 @@ def spam(text_from_file):
                     if len(data.proxies) >= data.proxy_index:
                         data.proxy_index = 0
                     try:
-                        raise TypeError('test!')
                         good_port = __get_correct_port(url, data.smtp_objects[url])
                         if good_port is None:
                             print('[ERROR] Connection failed: bad ports')
