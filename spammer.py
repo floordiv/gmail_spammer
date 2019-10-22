@@ -263,8 +263,15 @@ def spam(text_from_file):
                     data.proxy_index += 1
                     data.mails_index += 1
                     data.targets_index += 1
-                    if len(data.proxies) >= data.proxy_index:
+                    if data.proxy_index > len(data.proxies):
                         data.proxy_index = 0
+                        current_proxy_index = 0
+                    if data.mails_index > len(data.mails):
+                        data.mails_index = 0
+                        current_mail_index = 0
+                    if data.targets_index > len(data.targets):
+                        data.targets_index = 0
+                        current_target_index = 0
                     try:
                         good_port = __get_correct_port(url, data.smtp_objects[url])
                         if good_port is None:
