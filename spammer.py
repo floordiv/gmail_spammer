@@ -211,24 +211,29 @@ def init():
         data.mails = mails.read().split('\n')
     with open(data.targets_file, 'r') as targets:
         data.targets = targets.read().split('\n')
+    with open(data.proxies_file, 'r') as proxies:
+        data.proxies = proxies.read().split('\n')
     mails_totally = 1
     targets_totally = 1
     proxies_totally = 1
     for each in enumerate(data.proxies):
         index1, value = each
         if value.strip() == '':
-            del data.targets[index1]
-        targets_totally = index1 + 1
+            del data.proxies[index1]
+        else:
+            proxies_totally = index1 + 1
     for each in enumerate(data.mails):
         index2, value = each
         if value.strip() == '':
             del data.mails[index2]
-        mails_totally = index2 + 1
+        else:
+            mails_totally = index2 + 1
     for each in enumerate(data.targets):
         index3, value = each
         if value.strip() == '':
             del data.targets[index3]
-        targets_totally = index3 + 1
+        else:
+            targets_totally = index3 + 1
     if type(targets_totally / mails_totally) == int:
         data.mails_per_account = targets_totally / mails_totally
     for element in [['Mails', mails_totally], ['Targets', targets_totally], ['Proxies', proxies_totally]]:
@@ -338,101 +343,6 @@ def spam(text_from_file):
                 while True:
                     user_input = input('(paused) CMD> ')
                     shell.runcmd(user_input)
-
-    # for smtp_method in data.smtp_objects:
-    #     print('[INFO] Connecting to the {}...'.format(smtp_method))
-    #     try:
-    #         port_done = False
-    #         for port in data.smtp_objects[smtp_method]:
-    #             if port_done:
-    #                 break
-    #             try:
-    #                 print('[INFO] {}: trying port {}'.format(smtp_method, port))
-    #                 try:
-    #                     smtp = smtplib.SMTP(smtp_method, port)
-    #                 except:
-    #                     try:
-    #                         smtp = smtplib.SMTP_SSL(smtp_method, port)
-    #                     except:
-    #                         print('[ERROR] Failed to connect to the {}:{}'.format(smtp_method, port))
-    #                         continue
-    #                 print('[INFO] Successfully connected: {}, port {}. Starting tls connection...'.format(smtp_method, port))
-    #                 smtp.starttls()
-    #                 print('[INFO] TLS connection started successfully')
-    #
-    #                 update_vars = True
-    #                 while data.mails_index < len(data.mails):
-    #                     while not data.pause:
-    #                         try:
-    #                             if update_vars:
-    #                                 current_target_index = data.targets_index
-    #                                 current_mail_index = data.mails_index
-    #                                 data.targets_index += data.mails_per_account
-    #                                 data.mails_index += 1
-    #                                 update_vars = False
-    #                             try:
-    #                                 print('[INFO] Log in: {}'.format(data.mails[current_mail_index]))
-    #                             except IndexError:
-    #                                 update_vars = True
-    #                                 break
-    #                             current_mail_name, current_mail_password = data.mails[current_mail_index].split('/')
-    #                             try:
-    #                                 smtp.login(current_mail_name, current_mail_password)
-    #                                 print('[INFO] Login {}, password {}: Logged in successfully'.format(current_mail_name,
-    #                                                                                                     current_mail_password))
-    #                             except Exception as exception_login:
-    #                                 print('[ERROR] Login {}, password {}: can\'t login: {}'.format(current_mail_name, current_mail_password,
-    #                                                                                                str(
-    #                                                                                                    exception_login)))
-    #                             finished = False
-    #                             targets = []
-    #                             current_mails_per_account = data.mails_per_account
-    #                             while not finished:
-    #                                 if current_mails_per_account == 0:
-    #                                     print('[INFO] Spam finished: no more targets')
-    #                                     finished = True
-    #                                     return True
-    #                                 try:
-    #                                     targets = [i for i in
-    #                                                data.targets[current_target_index:current_mail_index + current_mails_per_account]]
-    #                                     finished = True
-    #                                 except IndexError:
-    #                                     current_mails_per_account -= 1
-    #                             try:
-    #                                 if targets is []:
-    #                                     continue
-    #                                 text = __get_valid_text(current_mail_name, text)
-    #                                 sleep(data.timeout)
-    #                                 smtp.sendmail(current_mail_name, targets, text)
-    #                                 print('[INFO] Login: {}, password {}: mail successfully sent'.format(current_mail_name,
-    #                                                                                                      current_mail_password))
-    #                             except Exception as exception_sending_mail:
-    #                                 print('[ERROR] Login {}, password {}: can\'t send mail: {}'.format(current_mail_name,
-    #                                                                                                    current_mail_password,
-    #                                                                                                    str(exception_sending_mail)))
-    #                                 # print('[DETAILS] Additional info about error:\n', format_exc())
-    #                                 print_err(format_exc())
-    #                             update_vars = True
-    #                         except KeyboardInterrupt:
-    #                             data.pause = True
-    #                             import shell
-    #                             while True:
-    #                                 user_input = input('CMD> ')
-    #                                 if user_input == 'stop':
-    #                                     print('[INFO] Stopping spammer...')
-    #                                     for each in data.threads:
-    #                                         each._stop()
-    #                                     return
-    #                                 shell.runcmd(user_input)
-    #
-    #             except Exception as exception_connecting:
-    #                 print('[ERROR] {}: port {}: connection failed: {}'.format(smtp_method, port, str(exception_connecting)))
-    #                 # print('[DETAILS] More error information:\n', format_exc())
-    #                 print_err(format_exc())
-    #                 return
-
-        # except Exception as exception:
-        #     print('[ERROR] An error occurred while spamming: {}'.format(str(exception)))
     data.proxy_index = 0
     data.mails_index = 0
     data.targets_index = 0
