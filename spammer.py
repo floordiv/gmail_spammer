@@ -146,7 +146,7 @@ def test_proxies(test_url='google.com'):
                                                     ' 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0; .NET4.0C; '
                                                     '.NET4.0E; InfoPath.3; Creative AutoUpdate v1.40.02)')]
                 urllib.request.install_opener(opener)
-                req = urllib.request.Request(f'https://{test_url}')
+                req = urllib.request.Request('https://{test_url}'.format(test_url=test_url))
                 sock = urllib.request.urlopen(req)
             except urllib.error.HTTPError as e:
                 print('{}. {}: error: {}'.format(index, proxy, e))
