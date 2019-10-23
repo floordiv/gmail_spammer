@@ -213,6 +213,12 @@ def init():
         data.targets = targets.read().split('\n')
     mails_totally = 1
     targets_totally = 1
+    proxies_totally = 1
+    for each in enumerate(data.proxies):
+        index1, value = each
+        if value.strip() == '':
+            del data.targets[index1]
+        targets_totally = index1 + 1
     for each in enumerate(data.mails):
         index2, value = each
         if value.strip() == '':
@@ -225,7 +231,7 @@ def init():
         targets_totally = index3 + 1
     if type(targets_totally / mails_totally) == int:
         data.mails_per_account = targets_totally / mails_totally
-    for element in [['Mails', mails_totally], ['Targets', targets_totally]]:
+    for element in [['Mails', mails_totally], ['Targets', targets_totally], ['Proxies', proxies_totally]]:
         print('[INFO] {} loaded successfully ({} totally)'.format(element[0], element[1]))
     return True
 
@@ -236,7 +242,6 @@ def __get_valid_text(email, text):
 
 
 def __get_correct_port(url, ports):
-    result = ''
     for port in ports:
         try:
             smtplib.SMTP(url, port)
